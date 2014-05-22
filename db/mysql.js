@@ -118,8 +118,8 @@ module.exports = function (
   // CREATE
   var CREATE_ACCOUNT = 'INSERT INTO accounts' +
     ' (uid, normalizedEmail, email, emailCode, emailVerified, kA, wrapWrapKb,' +
-    ' authSalt, verifierVersion, verifyHash, verifierSetAt, createdAt)' +
-    ' VALUES (?, LOWER(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    ' authSalt, verifierVersion, verifyHash, verifierSetAt, createdAt, username, fullName)' +
+    ' VALUES (?, LOWER(?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 
   MySql.prototype.createAccount = function (data) {
     log.trace(
@@ -130,7 +130,12 @@ module.exports = function (
       }
     )
     data.normalizedEmail = data.email
-    data.createdAt = data.verifierSetAt = Date.now()
+
+    if(data.forceCreatedAt && data.forceCreatedAt !== undefined) {
+      data.createdAt = data.verifierSetAt = data.forceCreatedAt.getTime();
+    } else {
+      data.createdAt = data.verifierSetAt = Date.now();
+    }
 
     return this.write(
       CREATE_ACCOUNT,
@@ -147,6 +152,8 @@ module.exports = function (
         data.verifyHash,
         data.verifierSetAt,
         data.createdAt
+        ,data.username
+        ,data.fullName
       ]
     )
     .then(

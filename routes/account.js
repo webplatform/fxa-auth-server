@@ -37,6 +37,9 @@ module.exports = function (
             preVerified: isA.boolean(),
             service: isA.string().max(16).alphanum().optional(),
             redirectTo: validators.redirectTo(redirectDomain).optional()
+            ,username: isA.string().max(55).optional()
+            ,forceCreatedAt: isA.date().optional()
+            ,fullName: isA.string().max(255).optional()
           }
         }
       },
@@ -85,6 +88,9 @@ module.exports = function (
                       authSalt: authSalt,
                       verifierVersion: password.version,
                       verifyHash: verifyHash
+                      ,username: form.username
+                      ,fullName: form.fullName || undefined
+                      ,forceCreatedAt: form.forceCreatedAt || false
                     }
                   )
                   .then(
